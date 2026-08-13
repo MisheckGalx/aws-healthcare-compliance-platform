@@ -20,29 +20,6 @@ AWS Config → EventBridge → SNS (alert) + Lambda (auto-remediate) → CloudTr
 
 ---
 
-## Why the rule changed from the original plan
-
-The project was originally scoped around an S3 **encryption** rule. During the build, AWS's current default behavior (auto-encrypting new S3 buckets) made that rule unable to produce a real violation — every new bucket came back `COMPLIANT` immediately. Rather than fake the finding, the project pivoted to a rule AWS does *not* auto-remediate: **S3 public read access** — arguably a more realistic and higher-impact real-world scenario, since accidental public buckets are a common cause of real cloud data breaches.
-
----
-
-## AWS Resources Built
-
-| Component | Resource | Region |
-|---|---|---|
-| Config recorder | `default` | eu-central-1 |
-| Config rules | `s3-bucket-server-side-encryption-enabled`, `s3-bucket-public-read-prohibited` | eu-central-1 |
-| Config delivery bucket | `aws-config-bucket-900429455393` | eu-central-1 |
-| Test resource | `compliance-test-bucket-900429455393` | eu-central-1 |
-| EventBridge rule | `config-noncompliant-rule` | eu-central-1 |
-| SNS topic | `compliance-alerts` | eu-central-1 |
-| Lambda function | `s3-public-access-remediation` (Python 3.12) | eu-central-1 |
-| IAM role | `lambda-remediation-role` | — |
-| CloudTrail trail | `compliance-trail` → `compliance-cloudtrail-logs-900429455393` | eu-central-1 |
-
-
----
-
 ## End-to-End Test Results
 
 The full pipeline was validated running unattended — the test bucket was made public via `put-bucket-policy`, and every downstream step fired automatically with no manual intervention:
