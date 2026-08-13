@@ -1,0 +1,5 @@
+response.json
+test-event.json
+function.zip
+*.pem
+.aws/
