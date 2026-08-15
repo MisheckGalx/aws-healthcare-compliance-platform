@@ -94,44 +94,14 @@ The IAM role behind it only has the specific S3 and logging permissions it needs
 
 ---
 
-## Running It Yourself
-
-```bash
-# Recreate the violation
-aws s3api put-public-access-block --bucket compliance-test-bucket-900429455393 \
-  --public-access-block-configuration BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false
-
-aws s3api put-bucket-policy --bucket compliance-test-bucket-900429455393 --policy file://config/public-policy.json
-
-# Force Config to notice
-aws configservice start-config-rules-evaluation --config-rule-names s3-bucket-public-read-prohibited
-
-# Then just wait ~1-2 minutes and check your inbox
-```
-
----
-
-## Keeping Costs Down
-
-Nothing here uses EC2, RDS, or NAT Gateways — just S3, Config, EventBridge, SNS, Lambda, and CloudTrail. When I'm not actively demoing it, I pause the two components most likely to accrue charges:
-
-```bash
-aws configservice stop-configuration-recorder --configuration-recorder-name default
-aws cloudtrail stop-logging --name compliance-trail --region eu-central-1
-```
-
-Both restart instantly, no rebuilding required.
-
----
-
 ## What I Actually Learned
 
 This was genuinely my first time in a terminal for real infrastructure work, so this list is more real than it might sound:
 
 - How IAM roles, trust policies, and least-privilege permissions actually fit together (not just in theory)
-- Why EventBridge rules match on state *changes*, not just current state — and why that matters for testing
+- Why EventBridge rules match on state *changes*, not just current state and why that matters for testing
 - The difference between an S3 bucket policy and a bucket-level public access block, and how they override each other
-- Debugging real AWS errors as they came up — Config's delivery channel needing the recorder to exist first, S3 bucket policies needing explicit cross-service permissions, IAM roles needing a few seconds to propagate before Lambda can use them
+- Debugging real AWS errors as they came up Config's delivery channel needing the recorder to exist first, S3 bucket policies needing explicit cross-service permissions, IAM roles needing a few seconds to propagate before Lambda can use them
 - Writing and deploying a Python Lambda function with a properly scoped execution role
 - Git and GitHub from the command line, including working across WSL and PowerShell on the same machine
 
