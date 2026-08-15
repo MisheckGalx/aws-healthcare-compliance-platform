@@ -1,16 +1,16 @@
 # 🏥 AWS Healthcare Compliance & Automated Remediation Platform
 
-> My first hands-on AWS project — built entirely from scratch, from a terminal I'd never opened before, to a working serverless pipeline that catches security violations and fixes them automatically.
+> My first hands-on AWS project built entirely from scratch, from a terminal I'd never opened before, to a working serverless pipeline that catches security violations and fixes them automatically.
 
 ---
 
 ## The Story
 
-I'm a backend engineer learning cloud and solutions architecture, and this was the project where I actually got my hands dirty in AWS for the first time — no prior terminal experience, no prior AWS console experience. Every command in this repo, I typed and understood for the first time while building it.
+I'm a backend engineer learning cloud and solutions architecture, and this was the project where I actually got my hands dirty in AWS for the first time no prior terminal experience, no prior AWS console experience. Every command in this repo, I typed and understood for the first time while building it.
 
-The idea: simulate what a healthcare company might build to stay on top of HIPAA-style security requirements — continuously watch cloud resources for misconfigurations, alert someone the moment something's wrong, and where it's safe to do so, fix it automatically without waiting on a human.
+The idea: simulate what a healthcare company might build to stay on top of HIPAA style security requirements continuously watch cloud resources for misconfigurations, alert someone the moment something's wrong, and where it's safe to do so, fix it automatically without waiting on a human.
 
-> **Disclaimer:** this is a technical demonstration inspired by HIPAA-style requirements. It is **not** a certified HIPAA-compliant environment, and I'm not claiming regulatory compliance — just building and proving out the underlying security engineering concepts.
+> **Disclaimer:** this is a technical demonstration inspired by HIPAA style requirements. It is **not** a certified HIPAA compliant environment, and I'm not claiming regulatory compliance just building and proving out the underlying security engineering concepts.
 
 ---
 
@@ -22,8 +22,8 @@ AWS Config → EventBridge → SNS (alert)  +  Lambda (auto-fix) → CloudTrail 
 
 | Step | What happens |
 |---|---|
-| 🔍 **AWS Config** | Continuously evaluates S3 buckets against a public-access security rule |
-| ⚡ **EventBridge** | Watches for a compliance state *change* — the moment a bucket flips to `NON_COMPLIANT` |
+| 🔍 **AWS Config** | Continuously evaluates S3 buckets against a public access security rule |
+| ⚡ **EventBridge** | Watches for a compliance state *change*  the moment a bucket flips to `NON_COMPLIANT` |
 | 📧 **SNS** | Emails me immediately with the exact violation |
 | 🤖 **Lambda** | Automatically strips the offending public policy and re-locks the bucket |
 | 📜 **CloudTrail** | Logs every API call behind the scenes, so there's a full audit trail of what happened and when |
@@ -32,38 +32,38 @@ AWS Config → EventBridge → SNS (alert)  +  Lambda (auto-fix) → CloudTrail 
 
 ## A Real Pivot, Not a Perfect Plan
 
-The project originally called for an **S3 encryption** rule as the demo violation. Partway through building, I discovered AWS now auto-encrypts every new S3 bucket by default — so that rule could never actually produce a violation anymore, no matter what I did.
+The project originally called for an **S3 encryption** rule as the demo violation. Partway through building, I discovered AWS now auto-encrypts every new S3 bucket by default so that rule could never actually produce a violation anymore, no matter what I did.
 
-Instead of forcing a fake result, I pivoted to a rule AWS *doesn't* silently fix for you: **S3 public read access**. Honestly, it ended up being a better demo — an accidentally public S3 bucket is one of the most common real-world causes of cloud data breaches, so catching and auto-fixing that is a more meaningful example of what this kind of pipeline is actually for.
+Instead of forcing a fake result, I pivoted to a rule AWS *doesn't* silently fix for you: **S3 public read access**. Honestly, it ended up being a better demo an accidentally public S3 bucket is one of the most common real world causes of cloud data breaches, so catching and auto fixing that is a more meaningful example of what this kind of pipeline is actually for.
 
 ---
 
 ## Proof It Actually Works
 
-I didn't just build this — I tested it end-to-end, unattended, and watched it catch and fix a real violation with zero manual intervention on the remediation step.
+I didn't just build this I tested it end-to-end, unattended, and watched it catch and fix a real violation with zero manual intervention on the remediation step.
 
-**1. AWS Config actively recording**
-![Config recording status](screenshots/01-config-recording.png)
+**The full pipeline, visualized**
+![Full project pipeline](screenshots/full_project_pipeline.png)
 
-**2. A real violation detected** — my test bucket flagged as publicly readable
-![Non-compliant bucket detected](screenshots/02-noncompliant-detected.png)
+**Config rules, actively evaluating**
+![Config rules overview](screenshots/config-rules.png)
 
-**3. SNS subscription confirmed** — the alert channel, live and ready
-![SNS subscription confirmed](screenshots/03-sns-subscription.png)
+**SNS, ready to alert**
+![SNS compliance alerts topic](screenshots/compliance-alerts.png)
 
-**4. The actual alert email** — sent automatically the moment the violation happened
-![Compliance alert email](screenshots/04-alert-email.png)
+**The actual alert email** — sent automatically the moment the violation happened
+![Compliance alert email](screenshots/the-alert-email.png)
 
-**5. Lambda, active and wired to EventBridge**
-![Lambda function active](screenshots/05-lambda-active.png)
+**Lambda, active and wired to EventBridge**
+![Lambda remediation function](screenshots/s3-public-access-remediation.png)
 
-**6. CloudTrail, logging every API call**
-![CloudTrail logging enabled](screenshots/06-cloudtrail-logging.png)
+**CloudTrail, logging every API call**
+![CloudTrail logging enabled](screenshots/compliance-trail.png)
 
-**7. Back to compliant — automatically, with no manual fix**
-![Bucket resolved back to compliant](screenshots/07-compliant-resolved.png)
+**Back to compliant — automatically, with no manual fix**
+![Bucket resolved back to compliant](screenshots/compliant-resolved.png)
 
-The sequence that produced these: I made the test bucket public on purpose, forced a Config evaluation, and then just... waited. A few minutes later, the email showed up in my inbox, and when I checked the bucket policy, it was already gone — Lambda had already fixed it before I even looked.
+The sequence that produced these: I made the test bucket public on purpose, forced a Config evaluation, and then just... waited. A few minutes later, the email showed up in my inbox, and when I checked the bucket policy, it was already gone Lambda had already fixed it before I even looked.
 
 ---
 
@@ -90,7 +90,7 @@ The sequence that produced these: I made the test bucket public on purpose, forc
 2. Re-applies a full public access block as a second layer of protection
 3. Logs everything to CloudWatch for traceability
 
-The IAM role behind it only has the specific S3 and logging permissions it needs — no wildcard admin access.
+The IAM role behind it only has the specific S3 and logging permissions it needs no wildcard admin access.
 
 ---
 
