@@ -106,8 +106,3 @@ This was genuinely my first time in a terminal for real infrastructure work, so 
 - Git and GitHub from the command line, including working across WSL and PowerShell on the same machine
 
 ---
-
-## Portfolio Summary
-
-**AWS Healthcare Compliance & Automated Remediation Platform**
-Designed and implemented a serverless AWS compliance platform using AWS Config, EventBridge, Lambda, SNS, CloudTrail, and IAM to continuously evaluate cloud resources against security policies, generate real-time compliance alerts, and automatically remediate public-access misconfigurations. Implemented least-privilege IAM and validated a full, unattended, end-to-end detection, notification, remediation, and audit workflow — as a first solo AWS project, built from zero prior hands-on experience.
